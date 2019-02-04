@@ -11,13 +11,11 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
-
-	"github.com/jteeuwen/go-bindata"
 )
 
 func main() {
 	cfg := parseArgs()
-	err := bindata.Translate(cfg)
+	err := Translate(cfg)
 
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "bindata: %v\n", err)
@@ -30,10 +28,10 @@ func main() {
 //
 // This function exits the program with an error, if
 // any of the command line options are incorrect.
-func parseArgs() *bindata.Config {
+func parseArgs() *Config {
 	var version bool
 
-	c := bindata.NewConfig()
+	c := NewConfig()
 
 	flag.Usage = func() {
 		fmt.Printf("Usage: %s [options] <input directories>\n\n", os.Args[0])
@@ -77,7 +75,7 @@ func parseArgs() *bindata.Config {
 	}
 
 	// Create input configurations.
-	c.Input = make([]bindata.InputConfig, flag.NArg())
+	c.Input = make([]InputConfig, flag.NArg())
 	for i := range c.Input {
 		c.Input[i] = parseInput(flag.Arg(i))
 	}
@@ -91,14 +89,14 @@ func parseArgs() *bindata.Config {
 //  ex:
 //      /path/to/foo/...    -> (/path/to/foo, true)
 //      /path/to/bar        -> (/path/to/bar, false)
-func parseInput(path string) bindata.InputConfig {
+func parseInput(path string) InputConfig {
 	if strings.HasSuffix(path, "/...") {
-		return bindata.InputConfig{
+		return InputConfig{
 			Path:      filepath.Clean(path[:len(path)-4]),
 			Recursive: true,
 		}
 	} else {
-		return bindata.InputConfig{
+		return InputConfig{
 			Path:      filepath.Clean(path),
 			Recursive: false,
 		}
